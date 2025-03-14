@@ -30,7 +30,7 @@ public class ATmpIndexIT extends BaseLocalIndexIT {
             conn1.commit();
             conn1.createStatement().execute("CREATE LOCAL INDEX " + indexName + " ON " + tableName + "(V1)");
             conn1.commit();
-            ResultSet rs = conn1.createStatement().executeQuery("SELECT * FROM " + indexTableName + " WHERE \":V1\" = 'a'");
+            ResultSet rs = conn1.createStatement().executeQuery("SELECT * FROM " + indexTableName);
             assertTrue(rs.next());
             fail();
         } catch (SQLException e) { // Expected
