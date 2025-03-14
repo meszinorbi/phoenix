@@ -4,7 +4,6 @@ import org.apache.phoenix.exception.SQLExceptionCode;
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,7 +19,7 @@ public class ATmpIndexIT extends BaseLocalIndexIT {
         String tableName = schemaName + "." + generateUniqueName();
         String indexName = "IDX_" + generateUniqueName();
         String indexTableName = schemaName + "." + indexName;
-        Connection conn1 = DriverManager.getConnection(getUrl());
+        Connection conn1 = getConnection();
         try {
 
             createBaseTable(tableName, null, null);
