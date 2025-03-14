@@ -21,8 +21,16 @@ public class ATmpIndexIT extends BaseLocalIndexIT {
         String indexTableName = schemaName + "." + indexName;
         Connection conn1 = getConnection();
         try {
-
-            createBaseTable(tableName, null, null);
+            if (isNamespaceMapped) {
+                conn1.createStatement().execute("CREATE SCHEMA IF NOT EXISTS " + schemaName);
+            }
+            String ddl = "CREATE TABLE " + tableName + " (t_id VARCHAR NOT NULL,\n" +
+                    "k1 INTEGER NOT NULL,\n" +
+                    "k2 INTEGER NOT NULL,\n" +
+                    "k3 INTEGER,\n" +
+                    "v1 VARCHAR,\n" +
+                    "CONSTRAINT pk PRIMARY KEY (t_id, k1, k2))\n";
+            conn1.createStatement().execute(ddl);
             conn1.createStatement().execute("UPSERT INTO " + tableName + " values('b',1,2,4,'z')");
             conn1.createStatement().execute("UPSERT INTO " + tableName + " values('f',1,2,3,'a')");
             conn1.createStatement().execute("UPSERT INTO " + tableName + " values('j',2,4,2,'a')");
