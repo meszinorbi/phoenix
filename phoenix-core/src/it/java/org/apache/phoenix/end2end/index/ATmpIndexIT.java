@@ -1,7 +1,10 @@
 package org.apache.phoenix.end2end.index;
 
 import org.apache.phoenix.exception.SQLExceptionCode;
+//import org.apache.phoenix.util.bson.TestUtil;
+import org.apache.phoenix.schema.PIndexState;
 import org.junit.Test;
+import org.apache.phoenix.util.TestUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,9 +16,11 @@ public class ATmpIndexIT extends BaseLocalIndexIT {
     public ATmpIndexIT(boolean isNamespaceMapped) {
         super(isNamespaceMapped);
     }
-
+    /*
+    The problem lies in the double quotes surrounding the value: f in the select query
+     */
     @Test
-    public void testIndexColumnOnUndefinedSchema() throws Exception {
+    public void testVarcharSurroundedByDoubleQuotesOnLocalIndex() throws Exception {
         String tableName = schemaName + "." + generateUniqueName();
         String indexName = "IDX_" + generateUniqueName();
         String indexTableName = schemaName + "." + indexName;
@@ -38,7 +43,10 @@ public class ATmpIndexIT extends BaseLocalIndexIT {
             conn1.commit();
             conn1.createStatement().execute("CREATE LOCAL INDEX " + indexName + " ON " + tableName + "(V1)");
             conn1.commit();
-            ResultSet rs = conn1.createStatement().executeQuery("SELECT * FROM " + indexTableName + " WHERE \"V1\" = 'a'");
+            assertEquals(PIndexState.ACTIVE, TestUtil.getIndexState(conn1, indexTableName));
+            assertEquals(4, TestUtil.getRowCount(conn1, indexTableName));
+            ResultSet rs = conn1.createStatement()
+                    .executeQuery("SELECT * FROM " + indexTableName + " WHERE \":T_ID\" = \"f\"");
             assertTrue(rs.next());
             fail();
         } catch (SQLException e) { // Expected
